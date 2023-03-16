@@ -82,8 +82,8 @@ def p3_tokenize_function(inp, tokenizer):
     # `text` is the text the encoder receives (i.e. the prompt)
     # `text_target` is the target output the decoder should produce
     try:
-        prompt = inp['inputs']  # instruction-finetuned prompts
-        response = inp['targets']  # sequence of values
+        prompt = inp['inputs_pretokenized']  # instruction-finetuned prompts
+        response = inp['targets_pretokenized']  # sequence of values
     except:
         print(inp)
         raise
