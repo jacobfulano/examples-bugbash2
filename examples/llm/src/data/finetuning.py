@@ -9,6 +9,7 @@ from typing import Any, Dict, List, Mapping, Optional, Union
 
 import torch
 import transformers
+import datasets
 from composer.utils import dist
 from torch.utils.data import DataLoader
 from transformers import PreTrainedTokenizer, PreTrainedTokenizerFast
@@ -60,6 +61,78 @@ def build_finetuning_dataloader(cfg: Mapping[str, Any], device_batch_size: int):
 
     return DataLoader(
         dataset,
+        collate_fn=Seq2SeqFinetuningCollator(
+            tokenizer,
+            max_seq_length=cfg.dataset.max_seq_length,
+            decoder_only_format=cfg.dataset.decoder_only_format,
+            allow_pad_trimming=cfg.dataset.get('allow_pad_trimming', False),
+        ),
+        batch_size=device_batch_size,
+        sampler=dist.get_sampler(dataset,
+                                 drop_last=cfg.drop_last,
+                                 shuffle=cfg.shuffle),
+        num_workers=cfg.num_workers,
+        pin_memory=cfg.pin_memory,
+        prefetch_factor=cfg.prefetch_factor,
+        persistent_workers=cfg.persistent_workers,
+        timeout=cfg.timeout,
+    )
+
+def concatenate_datasets(dataset_name: str):
+
+    
+
+def build_P3_dataloader(cfg: Mapping[str, Any], device_batch_size: int):
+    """Builds a dataloader for training or evaluating.
+
+    Args:
+        cfg (Mapping): The config for your dataset/dataloader. The config needs
+            to define the following:
+            - cfg.dataset.name (e.g. "HuggingFaceH4/alpaca"; must be registered in `dataset_constructor`)
+            - cfg.dataset.split (e.g. "train" or "validation")
+            - cfg.dataset.tokenizer_name (e.g. "gpt2")
+            - cfg.dataset.max_seq_length (e.g., 512)
+            - cfg.dataset.decoder_only_format (should be True for a GPT model)
+            - cfg.drop_last (e.g. False)
+            - cfg.shuffle (e.g. True for training, False for validation)
+            - cfg.num_workers (e.g. 8)
+            - cfg.pin_memory (e.g. True)
+            - cfg.prefetch_factor (e.g. 2)
+            - cfg.persistent_workers (e.g. True)
+            - cfg.timeout (e.g. 30)
+
+        device_batch_size (int): The batch size that should be loaded on each device.
+
+    Returns:
+        A pytorch dataloader
+    """
+    tokenizer = transformers.AutoTokenizer.from_pretrained(
+        cfg.dataset.tokenizer_name,
+        model_max_length=cfg.dataset.max_seq_length,
+        padding_side='left' if cfg.dataset.decoder_only_format else
+        'right')  #type: ignore (thirdparty)
+
+    if tokenizer.pad_token is None:
+        tokenizer.pad_token = tokenizer.eos_token
+
+    dataset_builder = datasets.builder(cfg.dataset.name)
+
+    config_names = [config.name for config in dataset_builder.builder_configs]
+
+    combined_dataset = dataset_constructor.build(cfg.dataset.name, config_names[0],
+                                            tokenizer, cfg.dataset.split)
+    # custom for P3
+    #for i in range(1,len(config_names)):
+    for i in range(1,10):
+        dataset = dataset_constructor.build(cfg.dataset.name, config_names[i],
+                                            tokenizer, cfg.dataset.split)
+
+        combined_dataset = datasets.concatenate_datasets([combined_dataset, dataset])
+
+    
+
+    return DataLoader(
+        combined_dataset, # change here
         collate_fn=Seq2SeqFinetuningCollator(
             tokenizer,
             max_seq_length=cfg.dataset.max_seq_length,
