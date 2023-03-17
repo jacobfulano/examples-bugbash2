@@ -88,8 +88,10 @@ def main(cfg):
         f'torch.distributed.*_base is a private function and will be deprecated.*'
     )
 
+    cfg.dist_timeout = cfg.get('dist_timeout', 1800.0)
+
     reproducibility.seed_all(cfg.seed)
-    dist.initialize_dist(get_device(None), timeout=1500.0)
+    dist.initialize_dist(get_device(None), timeout=cfg.dist_timeout)
 
     # Run Name
     if cfg.get('run_name') is None:
@@ -201,6 +203,7 @@ def main(cfg):
         load_ignore_keys=cfg.get('load_ignore_keys', None),
         autoresume=cfg.get('autoresume', False),
         python_log_level=cfg.get('python_log_level', None),
+        dist_timeout=cfg.dist_timeout,
     )
 
     print('Logging config...')

@@ -52,4 +52,3 @@ icl_tasks:
   prompt_string: '' # this goes at the beginning of each input
   example_delimiter: '\n' # this goes between fewshot examples
   continuation_delimiter: ' ' # this separates contexts from continuations
-  destination_path: lambada_local.jsonl
