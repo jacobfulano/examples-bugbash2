@@ -12,7 +12,7 @@ import torch
 import transformers
 from omegaconf import DictConfig
 from omegaconf import OmegaConf as om
-from streaming import StreamingDataset, Stream
+from streaming import Stream, StreamingDataset
 from torch.utils.data import DataLoader
 
 
@@ -148,11 +148,13 @@ class StreamingTextDataset(StreamingDataset):
             )
         return token_sample
 
+
 def build_streams(cfg: DictConfig):
     if cfg.get('streams', None) is not None:
         streams = []
         for stream_name in cfg.streams:
-            streams.append(Stream(**cfg.streams.get(stream_name), keep_zip=False))
+            streams.append(
+                Stream(**cfg.streams.get(stream_name), keep_zip=False))
         return streams
     else:
         return None
