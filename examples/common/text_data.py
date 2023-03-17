@@ -12,7 +12,7 @@ import torch
 import transformers
 from omegaconf import DictConfig
 from omegaconf import OmegaConf as om
-from streaming import Stream, StreamingDataset
+from streaming import StreamingDataset
 from torch.utils.data import DataLoader
 
 
