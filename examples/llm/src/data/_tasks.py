@@ -82,8 +82,8 @@ def p3_tokenize_function(inp, tokenizer):
     # `text` is the text the encoder receives (i.e. the prompt)
     # `text_target` is the target output the decoder should produce
     try:
-        prompt = inp['inputs_pretokenized']  # instruction-finetuned prompts
-        response = inp['targets_pretokenized']  # sequence of values
+        prompt = inp['inputs']  # instruction-finetuned prompts
+        response = inp['targets']  # sequence of values
     except:
         print(inp)
         raise
@@ -95,4 +95,5 @@ def p3_tokenize_function(inp, tokenizer):
 
 dataset_constructor.add('HuggingFaceH4/alpaca', alpaca_tokenize_function)
 dataset_constructor.add('laion/OIG', oig_tokenize_function)
-dataset_constructor.add('bigscience/P3', p3_tokenize_function)
+dataset_constructor.add('Muennighoff/P3',
+                        p3_tokenize_function)  # a reformatted P3 dataset
