@@ -7,7 +7,6 @@
 import logging
 from typing import Any, Dict, List, Mapping, Optional, Union
 
-import datasets
 import torch
 import transformers
 from composer.utils import dist
