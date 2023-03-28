@@ -17,6 +17,7 @@ from examples.common.config_utils import log_config, update_batch_size_info
 from examples.common.text_data import build_text_dataloader
 from examples.llm.src import (COMPOSER_MODEL_REGISTRY,
                               build_text_denoising_dataloader)
+from examples.llm.src.data.finetuning import build_finetuning_dataloader
 
 
 def validate_config(cfg):
