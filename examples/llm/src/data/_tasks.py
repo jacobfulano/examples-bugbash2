@@ -95,4 +95,4 @@ def p3_tokenize_function(inp, tokenizer):
 
 dataset_constructor.add('tatsu-lab/alpaca', alpaca_tokenize_function)
 dataset_constructor.add('laion/OIG', oig_tokenize_function)
-dataset_constructor.add('bigscience/P3', p3_tokenize_function)
+dataset_constructor.add('Muennighoff/P3', p3_tokenize_function)
